@@ -1,0 +1,243 @@
+<!--
+    
+    Esse site é protegido por turrets de ThiagoLA92
+                                                      ____               ____
+       ___       ___                                 |    \             /    |
+       \__\_____/__/                                 \  ___\___________/__  /
+       |           |______                            \/  _____    _____  \/
+       |   CCC      ______|  - - - - - - - -          |--||___||--||___||--|
+        \_________/                                  /______________________\
+        /  /   \  \                                  |    \/        \/      |
+     __/  /     \  \__                               |    /\        /\      |
+    /____/       \____\                               \____________________/
+
+-->
+
+
+<html>
+
+<!-- Nesse javascript vai ficar a lista dos eventos -->
+<script src="info.js"></script>
+
+<!-- Todo javascript que não faz parte da lista dos eventos -->
+<script>
+
+    // Botando a lista em ordem de dia, hora e minuto
+    eventInfo.sort(
+        function (a, b) {
+            if (a.day-b.day != 0)
+                return a.day - b.day
+            if (a.hour-b.hour != 0)
+                return a.hour - b.hour
+            return a.min - b.min
+        }
+        )
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    function CreateTable() {
+    
+        console.log("Botando quando a tabela foi atualizada")
+        document.getElementById('lastUpdateId').innerHTML = "Ultima atualização da lista de eventos: " + lastUpdate
+
+        console.log("Preparando a tabela")
+	    var conteudo_tabela = ""
+        
+	    conteudo_tabela += "<tr>"
+	    conteudo_tabela += "<th>#</th>"
+        conteudo_tabela += "<th>Link do evento</th>"
+        conteudo_tabela += "<th>Tipo</th>"
+        conteudo_tabela += "<th>Dia</th>"
+        conteudo_tabela += "<th>Hora</th>"
+        conteudo_tabela += "<th>Minuto</th>"
+        conteudo_tabela += "<th>Mapa</th>"
+        conteudo_tabela += "<th>Blind/Draft</th>"
+        conteudo_tabela += "<th>Organizador (utf8)</th>"
+        conteudo_tabela += "</tr>"
+        
+        console.log("Loop dos " + eventNumb + " eventos")
+		for (var i = 0; i < eventNumb; i++) {
+		    conteudo_tabela += "<tr filtros=\"0\" class=\"" + "evento " + i + " " + eventInfo[i].type + " " + eventInfo[i].day + "d " + eventInfo[i].hour + "h " + eventInfo[i].map + " " + eventInfo[i].pick + " \">"
+            conteudo_tabela += "<td>" + i + "</td>"
+		    conteudo_tabela += "<td><a href=\"" + eventInfo[i].link + "\">" + eventInfo[i].link + "</a></td>"
+		    conteudo_tabela += "<td>" + eventInfo[i].type + "</td>"
+		    conteudo_tabela += "<td>" + eventInfo[i].day + "</td>"
+		    conteudo_tabela += "<td>" + eventInfo[i].hour + "</td>"
+		    conteudo_tabela += "<td>" + eventInfo[i].min + "</td>"
+		    conteudo_tabela += "<td>" + eventInfo[i].map + "</td>"
+		    conteudo_tabela += "<td>" + eventInfo[i].pick + "</td>"
+		    conteudo_tabela += "<td>" + eventInfo[i].creator + "</td>"
+		    conteudo_tabela += "<td><button onClick=\"SwapEvent(" + i + "," + (i - 1) + ")\">/\\</button></td>"
+		    conteudo_tabela += "<td><button onClick=\"SwapEvent(" + i + "," + (i + 1) + ")\">\\/</button></td>"
+		    conteudo_tabela += "<td><button class=\"deleteButton\" onClick=\"DeleteEvent(" + i + ")\">X</button></td>"
+		    conteudo_tabela += "</tr>"
+        }
+
+		document.getElementById('tabela').innerHTML = conteudo_tabela
+
+        console.log("Exibindo as opções de filtro")
+        document.getElementById("filtro").removeAttribute("hidden");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Ao clicar em uma checkbox, esconder/aparecer tudo da classe x
+    function HideShow(cb, x) {
+
+        if (cb.checked == true) {
+            console.log("Acabou de marcar")
+
+            for (var i = 0; i < document.getElementsByClassName("evento").length; i++) {
+                if (HasClass(document.getElementsByClassName("evento")[i].className, x) < 0) {
+
+                    var temp = parseInt(document.getElementsByClassName("evento")[i].getAttribute("filtros")) - 1
+                    document.getElementsByClassName("evento")[i].setAttribute("filtros", String(temp))
+                }
+
+                if (parseInt(document.getElementsByClassName("evento")[i].getAttribute("filtros")) < 0)
+                    document.getElementsByClassName("evento")[i].setAttribute("hidden", "")
+                else
+                    document.getElementsByClassName("evento")[i].removeAttribute("hidden")
+            }
+
+        } else {
+            console.log("Acabou de desmarcar")
+
+            for (var i = 0; i < document.getElementsByClassName("evento").length; i++) {
+                if (HasClass(document.getElementsByClassName("evento")[i].className, x) < 0) {
+
+                    var temp = parseInt(document.getElementsByClassName("evento")[i].getAttribute("filtros")) + 1
+                    document.getElementsByClassName("evento")[i].setAttribute("filtros", String(temp))
+                }
+
+                if (parseInt(document.getElementsByClassName("evento")[i].getAttribute("filtros")) < 0)
+                    document.getElementsByClassName("evento")[i].setAttribute("hidden", "")
+                else
+                    document.getElementsByClassName("evento")[i].removeAttribute("hidden")
+            }
+        }
+
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Passa a ClassName e verifica se a classe x esta dentro da ClassName 
+    function HasClass(cn, x) {
+        return (' ' + cn + ' ').indexOf(' ' + x + ' ')
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Troca dois eventos de lugar na lista
+    function SwapEvent(first, second) {
+
+        if (second == -1 || second == eventNumb)
+            return
+
+        var temp
+
+        console.log("Trocando os links")
+        temp = eventInfo[first].link
+        eventInfo[first].link = eventInfo[second].link
+        eventInfo[second].link = temp
+
+        console.log("Trocando os tipos")
+        temp = eventInfo[first].type
+        eventInfo[first].type = eventInfo[second].type
+        eventInfo[second].type = temp
+
+        console.log("Trocando os dias")
+        temp = eventInfo[first].day
+        eventInfo[first].day = eventInfo[second].day
+        eventInfo[second].day = temp
+
+        console.log("Trocando as horas")
+        temp = eventInfo[first].hour
+        eventInfo[first].hour = eventInfo[second].hour
+        eventInfo[second].hour = temp
+
+        console.log("Trocando os minutos")
+        temp = eventInfo[first].min
+        eventInfo[first].min = eventInfo[second].min
+        eventInfo[second].min = temp
+
+        console.log("Trocando os mapas")
+        temp = eventInfo[first].map
+        eventInfo[first].map = eventInfo[second].map
+        eventInfo[second].map = temp
+
+        console.log("Trocando os picks")
+        temp = eventInfo[first].pick
+        eventInfo[first].pick = eventInfo[second].pick
+        eventInfo[second].pick = temp
+
+        console.log("Trocando os organizadores")
+        temp = eventInfo[first].creator
+        eventInfo[first].creator = eventInfo[second].creator
+        eventInfo[second].creator = temp
+
+        console.log("Escrevendo tabela novamente")
+        CreateTable()
+
+        console.log("Se alguma checkbox estiver marcada, tratar ela")
+        if (document.getElementsByClassName("checkbox")[0].checked == true)
+            HideShow(document.getElementsByClassName("checkbox")[0], 'Howling')
+        if (document.getElementsByClassName("checkbox")[1].checked == true)
+            HideShow(document.getElementsByClassName("checkbox")[1], 'Rift')
+        if (document.getElementsByClassName("checkbox")[2].checked == true)
+            HideShow(document.getElementsByClassName("checkbox")[2], 'Twisted')
+        if (document.getElementsByClassName("checkbox")[3].checked == true)
+            HideShow(document.getElementsByClassName("checkbox")[3], 'online')
+        if (document.getElementsByClassName("checkbox")[4].checked == true)
+            HideShow(document.getElementsByClassName("checkbox")[4], 'Misto')
+        if (document.getElementsByClassName("checkbox")[5].checked == true)
+            HideShow(document.getElementsByClassName("checkbox")[5], 'presencial')
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Esse delete é uma mentira, tudo que ele faz é esconder o evento
+    function DeleteEvent(x) {
+
+        answer = confirm("Tem certeza que quer deletar o evento " + x + "?")
+
+        if (answer == true)
+            for (var i = 0; i < document.getElementsByClassName("evento").length; i++)
+                if (HasClass(document.getElementsByClassName("evento")[i].className, x) >= 0)
+                    document.getElementsByClassName("evento")[i].setAttribute("hidden","")
+    }
+
+</script>
+
+<style>
+    table,th,td {
+        border: 1px solid
+    }
+
+    .deleteButton {
+        background-color: red
+    }
+</style>
+
+<body>
+
+    <button onclick="CreateTable()">Criar Tabela</button>
+    <div id="filtro" hidden>
+        <p>Mapas:</p>
+        <input type="checkbox" class="checkbox" onclick="HideShow(this, 'Howling')"> Howling Abyss
+        <input type="checkbox" class="checkbox" onclick="HideShow(this, 'Rift')"> Summoner's Rift
+        <input type="checkbox" class="checkbox" onclick="HideShow(this, 'Twisted')"> Twisted Treeline
+        <p>Tipo do torneio:</p>
+        <input type="checkbox" class="checkbox" onclick="HideShow(this, 'online')"> Torneio online
+        <input type="checkbox" class="checkbox" onclick="HideShow(this, 'Misto')"> Torneio Misto
+        <input type="checkbox" class="checkbox" onclick="HideShow(this, 'presencial')"> Torneio presencial
+    </div>
+
+    <table id="tabela">
+    </table>
+    
+    <p id="lastUpdateId"></p>
+
+</body>
+
+</html>
