@@ -1,3 +1,5 @@
+**Youtube**: https://www.youtube.com/watch?v=8pBW87np-kc
+
 # Warning
 Hoje em dia acredito que esse crawler seja inútil, pois nem o site de eventos parece estar funcionando bem e Riot decidiu por adotar outras maneiras de torneio (torneio universitário).
 
